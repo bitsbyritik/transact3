@@ -12,7 +12,7 @@ interface Props {
   children: ReactNode;
 }
 
-const SolanaProvider: FC<Props> = ({ children }) => {
+export const SolanaProvider: FC<Props> = ({ children }) => {
   const endpoint = useMemo(() => process.env.NETWORK_URL!, []);
 
   const wallets = useMemo(() => [], [endpoint]);
@@ -25,5 +25,3 @@ const SolanaProvider: FC<Props> = ({ children }) => {
     </ConnectionProvider>
   );
 };
-
-export default SolanaProvider;
