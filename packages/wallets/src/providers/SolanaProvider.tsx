@@ -13,7 +13,8 @@ interface Props {
 }
 
 export const SolanaProvider: FC<Props> = ({ children }) => {
-  const endpoint = useMemo(() => process.env.NETWORK_URL!, []);
+  console.log(process.env.NEXT_PUBLIC_RPC_URL);
+  const endpoint = useMemo(() => process.env.NEXT_PUBLIC_RPC_URL!, []);
 
   const wallets = useMemo(() => [], [endpoint]);
 

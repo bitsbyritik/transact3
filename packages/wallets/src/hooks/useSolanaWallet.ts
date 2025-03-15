@@ -1,24 +1,43 @@
+"use client";
+
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { Transaction } from "@solana/web3.js";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export const useSolanaWallet = () => {
-  const { publicKey, signTransaction, signMessage, connect, disconnect } =
-    useWallet();
+  const {
+    publicKey,
+    signTransaction,
+    signMessage,
+    connect,
+    disconnect,
+    wallet,
+  } = useWallet();
 
   const { connection } = useConnection();
+  const { setVisible } = useWalletModal();
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (publicKey) {
+      setWalletAddress(publicKey.toBase58());
+    } else {
+      setWalletAddress(null);
+    }
+  }, []);
 
   const handleConnect = useCallback(async () => {
     try {
-      await connect();
-      if (publicKey) {
-        setWalletAddress(publicKey.toBase58());
+      if (!wallet) {
+        setVisible(true);
+        return;
       }
+      await connect();
     } catch (error) {
       console.error("Failed tp connect wallet", error);
     }
-  }, [connect, publicKey]);
+  }, [connect, wallet, setVisible]);
 
   const handleDisconnect = useCallback(async () => {
     disconnect();
@@ -38,7 +57,7 @@ export const useSolanaWallet = () => {
       transaction.feePayer = publicKey;
       return await signTransaction(transaction);
     },
-    [signTransaction, publicKey],
+    [signTransaction, publicKey, connection],
   );
 
   const signSolanaMessage = useCallback(
