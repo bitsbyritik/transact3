@@ -1,12 +1,12 @@
 services:
-  db: 
-    container_name: transact3
+  db:
+    container_name: pay3now
     image: postgres:latest
     restart: unless-stopped
-    environment: 
+    environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: transact3
+      POSTGRES_DB: pay3now
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - 5432:5432
@@ -15,3 +15,4 @@ services:
 
 volumes:
   postgres-data:
+
