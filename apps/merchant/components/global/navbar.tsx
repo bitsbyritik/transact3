@@ -2,16 +2,29 @@ import { buttonVariants } from "@workspace/ui/components/button";
 import Container from "./container";
 import Link from "next/link";
 import Icons from "./icons";
-import { authClient } from "@/lib/auth-client";
+import { authClient, getSession } from "@/lib/auth-client";
 import { ConnectWalletButton } from "@workspace/wallets";
+import { cn } from "@workspace/ui/lib/utils";
 
 const Navbar = async () => {
-  const { data: session } = await authClient.getSession();
+  const session = getSession();
+
+  console.log("session", session);
 
   return (
-    <header className="px-4 h-14 sticky top-0 inset-x-0 w-full bg-background/40 backdrop-blur-lg border-b border-border z-50">
+    <header
+      className={cn(
+        "px-4 h-14 sticky top-0 inset-x-0 w-full bg-background/40 backdrop-blur-lg border-b border-border z-50",
+        session && "bg-muted/50",
+      )}
+    >
       <Container reverse>
-        <div className="flex items-center justify-between h-full mx-auto md:max-w-screen-xl">
+        <div
+          className={cn(
+            "flex items-center justify-between h-full mx-auto ",
+            !session && "md:max-w-screen-xl",
+          )}
+        >
           <div className="flex items-start">
             <Link href="/" className="flex items-center gap-2">
               <Icons.logo className="w-8 h-8" />

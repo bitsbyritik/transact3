@@ -1,8 +1,10 @@
+import { authClient, signIn } from "@/lib/auth-client";
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent } from "@workspace/ui/components/card";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { cn } from "@workspace/ui/lib/utils";
+import { toast } from "sonner";
 
 export function LoginForm({
   className,
@@ -52,7 +54,24 @@ export function LoginForm({
                 </span>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <Button variant="outline" className="w-full cursor-pointer">
+                <Button
+                  variant="outline"
+                  className="w-full cursor-pointer"
+                  onClick={() => {
+                    toast.promise(
+                      signIn.social({
+                        provider: "github",
+                        callbackURL: "/dashboard",
+                        errorCallbackURL: "/error",
+                      }),
+                      {
+                        loading: "Redirecting...",
+                        success: "Redirected successfully!",
+                        error: "Login failed!",
+                      },
+                    );
+                  }}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
