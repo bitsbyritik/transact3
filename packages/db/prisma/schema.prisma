@@ -14,15 +14,16 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid())
+  id            String     @id @default(uuid())
   name          String
-  email         String    @unique
+  email         String     @unique
   emailVerified Boolean
   image         String?
   createdAt     DateTime
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
+  Merchant      Merchant[]
 
   @@map("user")
 }
@@ -69,4 +70,111 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+model Merchant {
+  id            String        @id @default(uuid())
+  walletAddress String
+  businessName  String?
+  createdAt     DateTime      @default(now())
+  userId        String
+  apiKey        String?
+  user          User          @relation(fields: [userId], references: [id])
+  payments      Payment[]
+  PaymentLink   PaymentLink[]
+  Invoice       Invoice[]
+  QR            QR[]
+  Button        Button[]
+  APIPayment    APIPayment[]
+}
+
+model Payment {
+  id              String        @id @default(uuid())
+  merchantId      String
+  transactionSign String?       @unique
+  paidToken       String?
+  amount          Float
+  payerAddress    String
+  status          PaymentStatus @default(PENDING)
+  paymentLinkId   String?
+  invoiceId       String?       @unique
+  buttonId        String?
+  qrCodeId        String?
+  apiGatewayId    String?
+  createdAt       DateTime      @default(now())
+  expiresAt       DateTime?
+  completedAt     DateTime?
+  failedAt        DateTime?
+  merchant        Merchant      @relation(fields: [merchantId], references: [id])
+  paymentLink     PaymentLink?  @relation(fields: [paymentLinkId], references: [id])
+  qrCode          QR?           @relation(fields: [qrCodeId], references: [id])
+  invoice         Invoice?      @relation(fields: [invoiceId], references: [id])
+  button          Button?       @relation(fields: [buttonId], references: [id])
+  apiGateway      APIPayment?   @relation(fields: [apiGatewayId], references: [id])
+}
+
+model PaymentLink {
+  id         String    @id @default(uuid())
+  merchantId String
+  amount     String
+  status     Status
+  createdAt  DateTime  @default(now())
+  payments   Payment[]
+  merchant   Merchant  @relation(fields: [merchantId], references: [id])
+}
+
+model Invoice {
+  id         String        @id @default(uuid())
+  number     Int           @unique @default(autoincrement())
+  name       String?
+  email      String?
+  merchantId String
+  amount     String
+  status     PaymentStatus
+  createdAt  DateTime      @default(now())
+  merchant   Merchant      @relation(fields: [merchantId], references: [id])
+  payment    Payment?
+}
+
+model QR {
+  id         String    @id @default(uuid())
+  merchantId String
+  amount     String?
+  status     Status
+  createdAt  DateTime  @default(now())
+  payments   Payment[]
+  merchant   Merchant  @relation(fields: [merchantId], references: [id])
+}
+
+model Button {
+  id         String    @id @default(uuid())
+  merchantId String
+  amount     String?
+  status     Status
+  createdAt  DateTime  @default(now())
+  payments   Payment[]
+  Merchant   Merchant  @relation(fields: [merchantId], references: [id])
+}
+
+model APIPayment {
+  id         String    @id @default(uuid())
+  merchantId String
+  amount     String?
+  status     Status
+  createdAt  DateTime  @default(now())
+  payments   Payment[]
+  merchant   Merchant  @relation(fields: [merchantId], references: [id])
+}
+
+enum Status {
+  ACTIVE
+  DISABLED
+  EXPIRED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  EXPIRED
 }
