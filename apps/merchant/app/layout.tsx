@@ -1,30 +1,32 @@
-import { Geist, Geist_Mono } from "next/font/google"
-
-import "@workspace/ui/globals.css"
-import { Providers } from "@/components/providers"
-
-const fontSans = Geist({
-  subsets: ["latin"],
-  variable: "--font-sans",
-})
-
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-})
+import "@workspace/ui/globals.css";
+import { Providers } from "@/components/providers";
+import { SolanaProvider } from "@workspace/wallets";
+import { base, heading } from "@/config/font";
+import { Toaster } from "sonner";
+import { cn } from "@workspace/ui/lib/utils";
+// export const metadata = siteConfig;
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="light" suppressHydrationWarning>
       <body
-        className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}
+        className={cn(
+          "min-h-screen bg-background text-foreground antialiased max-w-full overflow-x-hidden",
+          base.variable,
+          heading.variable,
+        )}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <SolanaProvider>
+            {children}
+            <Toaster richColors />
+          </SolanaProvider>
+        </Providers>
       </body>
     </html>
-  )
+  );
 }
