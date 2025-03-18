@@ -1,19 +1,47 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { createAuthClient } from "better-auth/client";
+
+const client = createAuthClient();
+
+const publicRoutes = [
+  "/auth/signin",
+  "/auth/register",
+  "/",
+  "/api/auth/"
+]
 
 export async function middleware(request: NextRequest) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+    const {pathname} = request.nextUrl;
+    const  isPublicRoute = publicRoutes.includes(pathname);
 
-  if (!session) {
-    return NextResponse.redirect(new URL("/auth/signin", request.url));
-  }
+    if(!isPublicRoute){
+      const {data: session} = await client.getSession({
+        fetchOptions: {
+          headers: {
+            cookie: request.headers.get("cookie") || ""
+          }
+        }
+      });
 
-  return NextResponse.next();
+      if(!session){
+        return NextResponse.redirect(new URL("/auth/signin", request.url))
+      }
+    }
+
+    return NextResponse.next();
 }
-
+ 
 export const config = {
-  matcher: ["/dashboard"], // Apply middleware to specific routes
-};
+   matcher: [
+       /*
+        * Match all request paths except for the ones starting with:
+        * - _next/static (static files)
+        * - _next/image (image optimization files)
+        * - favicon.ico (favicon file)
+        * - public files (public folder)
+        * - api routes (except /api/auth/early-access)
+        */
+       "/dashboard",
+       "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+     ],
+  };

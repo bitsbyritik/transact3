@@ -14,16 +14,17 @@ datasource db {
 }
 
 model User {
-  id            String     @id @default(uuid())
+  id            String    @id @default(uuid())
   name          String
-  email         String     @unique
+  email         String    @unique
   emailVerified Boolean
   image         String?
   createdAt     DateTime
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
-  Merchant      Merchant[]
+  merchantId    String?   @unique
+  merchant      Merchant?
 
   @@map("user")
 }
@@ -77,9 +78,9 @@ model Merchant {
   walletAddress String
   businessName  String?
   createdAt     DateTime      @default(now())
-  userId        String
+  userId        String?       @unique
   apiKey        String?
-  user          User          @relation(fields: [userId], references: [id])
+  user          User?         @relation(fields: [userId], references: [id])
   payments      Payment[]
   PaymentLink   PaymentLink[]
   Invoice       Invoice[]
