@@ -20,12 +20,10 @@ export const useSolanaWallet = () => {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
   useEffect(() => {
-    if (publicKey) {
-      setWalletAddress(publicKey.toBase58());
-    } else {
-      setWalletAddress(null);
+    if (!publicKey && wallet) {
+      connect().catch((error) => console.error("Auto-connect failed", error));
     }
-  }, []);
+  }, [publicKey, connect, wallet]);
 
   const handleConnect = useCallback(async () => {
     try {
@@ -74,7 +72,7 @@ export const useSolanaWallet = () => {
   return {
     connect: handleConnect,
     disconnect: handleDisconnect,
-    walletAddress,
+    walletAddress: publicKey?.toBase58() || null,
     signSolanaTransaction,
     signSolanaMessage,
   };

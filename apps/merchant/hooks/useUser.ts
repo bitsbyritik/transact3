@@ -6,6 +6,7 @@ interface User {
   email: string;
   name: string;
   avatar?: string;
+  merchantId?: string;
 }
 
 export const useUser = () => {
@@ -25,7 +26,7 @@ export const useUser = () => {
             id: userData.id,
             email: userData.email,
             name: userData.name,
-            avatar: userData.image || "random",
+            avatar: userData.image || undefined,
           });
         } else {
           setUser(null);

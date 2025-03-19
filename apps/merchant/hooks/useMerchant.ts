@@ -1,37 +1,17 @@
-import prisma from "@workspace/db/client";
-import { useUser } from "./useUser"
-import { useEffect, useState } from "react";
+import { getMerchant } from "@/actions/getMerchant"
+import useSWR from "swr";
 
-interface Merchant {
-    id: String;
-    walletAddress: string;
-    businessName?: string;
+const fetchMerchant = async() => {
+    const res = await getMerchant();
+    return res;
 }
 
 export const useMerchant = () => {
-    const user = useUser();
-    const [merchant, setMerchant] = useState<Merchant | null>(null);
+    const {data, error, isLoading} = useSWR("merchant", fetchMerchant);
 
-    useEffect(() => {
-        (async() => {
-            const merchantData = await prisma.merchant.findUnique({
-                where: {
-                    userId: user.user?.id
-                }
-            })
-
-            if(merchantData){
-                setMerchant({
-                    id: merchantData.id,
-                    walletAddress: merchantData.walletAddress,
-                    businessName: merchantData.businessName || undefined
-                });
-            }
-            else {
-                setMerchant(null);
-            }
-        })
-    }, []);
-
-    return {merchant};
+    return {
+        merchant: data?.merchant,
+        isLoading,
+        error
+    };
 }

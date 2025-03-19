@@ -10,7 +10,8 @@ export const ConnectWalletButton = () => {
   const { connected } = useWallet();
   return (
     <Button
-      variant={"outline"}
+      className="cursor-pointer"
+      variant={"default"}
       onClick={() => (connected ? disconnect() : connect())}
     >
       {connected ? "Disconnect" : "Connect Wallet"}

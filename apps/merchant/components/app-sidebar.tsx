@@ -13,7 +13,7 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from "@workspace/ui/components/sidebar";
-import { getSession, signOut } from "@/lib/auth-client";
+import { signOut } from "@/lib/auth-client";
 import { useUser } from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -21,8 +21,6 @@ import { toast } from "sonner";
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user: currentUser } = useUser();
   const router = useRouter();
-
-  console.log("currentUser", currentUser);
 
   const handleLogout = async () => {
     try {

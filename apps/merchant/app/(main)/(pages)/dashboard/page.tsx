@@ -1,24 +1,14 @@
-"use client"
-
+import { getMerchant } from "@/actions/getMerchant";
 import { ContentCard } from "@/components/ContentCartd";
-import { useMerchant } from "@/hooks/useMerchant";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { redirect } from "next/navigation";
 
-export default function Page() {
-  const {merchant} = useMerchant();
-  const router = useRouter();
-
-  useEffect(() => {
-    if(!merchant?.id){
-      router.push('/welcome');
-    }
-  }, [merchant, router])
+export default async function Page() {
+  const {merchant} = await getMerchant();
 
   if(!merchant?.id){
-    return <div>Loading...</div>
+    redirect("/welcome");
   }
- 
+
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0 -mt-6">
       <div className="grid auto-rows-min gap-4 md:grid-cols-3">
